@@ -7,10 +7,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from dash.dependencies import Input, Output
 
-# Mac User
-path = "dataset-vis.csv"
-# Windows User
-# path = "C:\\Users\\liur2\\Desktop\\DV_CLASS\\dataset-vis.csv"
+path = "https://raw.githubusercontent.com/JeremyVino/Data-Visualization/master/dataset-vis.csv"
 df = pd.read_csv(path)
 
 
