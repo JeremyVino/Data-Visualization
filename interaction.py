@@ -12,11 +12,16 @@ df = pd.read_csv(path)
 
 
 df['Start Time']=pd.to_datetime(df['Start Time'])
+df['Stop Time']=pd.to_datetime(df['Stop Time'])
 df['hour']=""
 df['local_time']=""
+df['start_minute']=""
+df['end_minute']=""
 for i in range(df.shape[0]):
 	df.at[i,'hour']=int(df.at[i,'Start Time'].strftime("%H"))
 	df.at[i,'local_time']=df.at[i,'Start Time'].strftime("%X")
+	df.at[i,'start_minute'] = int(df.at[i,'Start Time'].strftime("%M"))
+	df.at[i,'end_minute'] = int(df.at[i,'Stop Time'].strftime("%M"))
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -159,9 +164,22 @@ def update_figure(selected_hour):
 		"layout": go.Layout(title="Top frequent start stations", margin={'l': 90, 'r': 1, 't': 1, 'b': 90},
 							legend={"x": 2, "y": 2})
 	}
-	parallel=px.parallel_coordinates(filtered_df,title='Parallel Coordinates',dimensions=['Trip Duration','Start Station ID','Start Station Latitude','Start Station Longitude','End Station ID','End Station Latitude','End Station Longitude','Bike ID','Birth Year','Gender'],
-                labels={'Trip Duration':'Duration','Start Station ID':'Start ID','Start Station Latitude':'Start Lat.','Start Station Longitude':'Start Longi.','End Station ID':'End ID','End Station Latitude':'End Lat.','End Station Longitude':'End Longi.','Bike ID':'Bike ID','Birth Year':'Birth Year','Gender':'Gender'}
-            )
+
+	#parallel = px.parallel_coordinates(filtered_df,color='Gender',title='Parallel Coordinates',dimensions=['Trip Duration','Start Time','Stop Time'])
+
+	parallel = {
+		"data": [go.Parcoords(
+			line = dict(color=filtered_df['Gender']),
+			dimensions=list([
+				dict(label='Duration',values=filtered_df['Trip Duration']),
+				dict(label='Start Time (minutes)',values=filtered_df['start_minute']),
+				dict(label='End Time (minutes)',values=filtered_df['end_minute'])
+			])
+		)],
+		"layout":go.Layout(title='Parallel Coordinates')
+	}
+
+
 
 	end_pie_plot={
 		"data": [go.Pie(labels=groupendstation.index, values=groupendstation.values,
